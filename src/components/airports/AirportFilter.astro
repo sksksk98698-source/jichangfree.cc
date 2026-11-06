@@ -1,0 +1,191 @@
+---
+// Client-side Airport Filter Component
+---
+
+<div class="filter-container border-shadow">
+  <div class="search-box">
+    <input
+      type="text"
+      id="airport-search-input"
+      placeholder="搜索机场名称、协议（VLESS/Shadowsocks）、专线类型或价格..."
+      aria-label="搜索机场"
+    />
+  </div>
+
+  <div class="filter-controls">
+    <div class="filter-group">
+      <span class="group-label">线路类型：</span>
+      <div class="filter-pills" id="line-pills">
+        <button class="pill active" data-filter="all">全部</button>
+        <button class="pill" data-filter="IEPL专线">IEPL专线</button>
+        <button class="pill" data-filter="IPLC专线">IPLC专线</button>
+        <button class="pill" data-filter="BGP隧道中转">BGP中转</button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <span class="group-label">实测状态：</span>
+      <div class="filter-pills" id="test-pills">
+        <button class="pill active" data-filter="all">全部</button>
+        <button class="pill" data-filter="has-test">附实测测速/解锁图</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-stats">
+    <span
+      >共收录 <strong id="total-count">42</strong> 家机场品牌，当前显示：<strong id="filtered-count"
+        >42</strong
+      > 家</span
+    >
+  </div>
+</div>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("airport-search-input");
+    const linePills = document.querySelectorAll("#line-pills .pill");
+    const testPills = document.querySelectorAll("#test-pills .pill");
+    const cards = document.querySelectorAll(".airport-card");
+    const countEl = document.getElementById("filtered-count");
+
+    let currentLine = "all";
+    let currentTest = "all";
+    let currentQuery = "";
+
+    function filterCards() {
+      let visible = 0;
+      cards.forEach((card) => {
+        const line = card.getAttribute("data-line") || "";
+        const protocols = card.getAttribute("data-protocols") || "";
+        const hasTest = card.getAttribute("data-has-test") === "true";
+        const text = card.textContent.toLowerCase();
+
+        const matchLine = currentLine === "all" || line.includes(currentLine);
+        const matchTest = currentTest === "all" || (currentTest === "has-test" && hasTest);
+        const matchQuery = !currentQuery || text.includes(currentQuery.toLowerCase());
+
+        if (matchLine && matchTest && matchQuery) {
+          card.style.display = "flex";
+          visible++;
+        } else {
+          card.style.display = "none";
+        }
+      });
+      if (countEl) countEl.textContent = visible;
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", (e) => {
+        currentQuery = e.target.value.trim();
+        filterCards();
+      });
+    }
+
+    linePills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        linePills.forEach((p) => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentLine = pill.getAttribute("data-filter");
+        filterCards();
+      });
+    });
+
+    testPills.forEach((pill) => {
+      pill.addEventListener("click", () => {
+        testPills.forEach((p) => p.classList.remove("active"));
+        pill.classList.add("active");
+        currentTest = pill.getAttribute("data-filter");
+        filterCards();
+      });
+    });
+  });
+</script>
+
+<style>
+  .filter-container {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4) var(--space-6);
+    margin-bottom: var(--space-8);
+  }
+
+  .search-box input {
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background-color: var(--accent);
+    color: var(--foreground);
+    font-size: var(--font-size-base);
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color var(--duration) ease;
+  }
+
+  .search-box input:focus {
+    border-color: var(--primary);
+  }
+
+  .filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+
+  .filter-group {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .group-label {
+    font-size: var(--font-size-sm);
+    color: var(--muted-foreground);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .pill {
+    background-color: var(--accent);
+    color: var(--muted-foreground);
+    border: 1px solid var(--border);
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-full, 9999px);
+    font-size: var(--font-size-xs);
+    cursor: pointer;
+    transition: all var(--duration) ease;
+  }
+
+  .pill:hover {
+    color: var(--foreground);
+    border-color: var(--primary);
+  }
+
+  .pill.active {
+    background-color: var(--primary);
+    color: var(--background);
+    border-color: var(--primary);
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .filter-stats {
+    margin-top: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--border);
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+  }
+
+  .filter-stats strong {
+    color: var(--foreground);
+  }
+</style>

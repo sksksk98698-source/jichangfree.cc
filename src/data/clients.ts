@@ -1,0 +1,261 @@
+// Auto-generated Proxy Clients Database
+// Based on 第三方代理客户端.txt
+
+export interface ClientItem {
+  name: string;
+  os: "windows" | "android" | "ios" | "macos" | "linux" | "router";
+  osLabel: string;
+  core: string;
+  features: string;
+  downloadType: "GitHub" | "App Store" | "Official Docs" | "Official Site";
+  downloadUrl: string;
+  isPopular: boolean;
+  recommended: boolean;
+}
+
+export const CLIENTS: ClientItem[] = [
+  // Windows
+  {
+    name: "Clash Verge Rev",
+    os: "windows",
+    osLabel: "Windows 电脑",
+    core: "Mihomo 内核",
+    features: "订阅管理、规则分流、TUN 模式，新手及进阶首选",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/clash-verge-rev/clash-verge-rev",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "v2rayN",
+    os: "windows",
+    osLabel: "Windows 电脑",
+    core: "Xray / sing-box 内核",
+    features: "适合多协议混合管理、路由规则自定与高级节点批量测速",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/2dust/v2rayN",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "FlClash",
+    os: "windows",
+    osLabel: "Windows 电脑",
+    core: "Mihomo 内核",
+    features: "极简轻量 Material 界面，跨平台通用",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/chen08209/FlClash",
+    isPopular: false,
+    recommended: false,
+  },
+  {
+    name: "Hiddify",
+    os: "windows",
+    osLabel: "Windows 电脑",
+    core: "sing-box 内核",
+    features: "全自动多协议节点优选，一键直连免复杂配置",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/hiddify/hiddify-next",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Karing",
+    os: "windows",
+    osLabel: "Windows 电脑",
+    core: "sing-box 内核",
+    features: "适合新手上手的跨平台订阅管理与规则路由",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/KaringX/karing",
+    isPopular: false,
+    recommended: false,
+  },
+
+  // Android
+  {
+    name: "v2rayNG",
+    os: "android",
+    osLabel: "Android 安卓",
+    core: "Xray 核心",
+    features: "安卓装机量第一，全面支持节点链接导入与自定分流",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/2dust/v2rayNG",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Clash Meta for Android",
+    os: "android",
+    osLabel: "Android 安卓",
+    core: "Mihomo 内核",
+    features: "Clash YAML 深度兼容，支持策略组切换与应用单独分流",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/MetaCubeX/ClashMetaForAndroid",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "sing-box for Android (SFA)",
+    os: "android",
+    osLabel: "Android 安卓",
+    core: "sing-box 官方",
+    features: "官方原生客户端，性能损耗极低，支持原生 JSON 配置",
+    downloadType: "Official Docs",
+    downloadUrl: "https://sing-box.sagernet.org",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Hiddify Android",
+    os: "android",
+    osLabel: "Android 安卓",
+    core: "sing-box 内核",
+    features: "多协议自适应导入，操作界面友好直观",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/hiddify/hiddify-next",
+    isPopular: false,
+    recommended: false,
+  },
+
+  // iOS / iPadOS
+  {
+    name: "Shadowrocket (小火箭)",
+    os: "ios",
+    osLabel: "iPhone / iPad",
+    core: "自主协议栈",
+    features: "iOS 最流行规则代理，支持节点测速、抓包与按域名智能分流",
+    downloadType: "App Store",
+    downloadUrl: "https://apps.apple.com/app/shadowrocket/id932747118",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Stash",
+    os: "ios",
+    osLabel: "iPhone / iPad",
+    core: "Clash 核心",
+    features: "iOS 端完整的 Clash 规则支持，界面精美，覆写功能强大",
+    downloadType: "App Store",
+    downloadUrl: "https://apps.apple.com/app/stash/id1596063349",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Quantumult X (圈 X)",
+    os: "ios",
+    osLabel: "iPhone / iPad",
+    core: "自研引擎",
+    features: "极高可玩性的进阶工具，支持 JavaScript 脚本与精密策略组",
+    downloadType: "App Store",
+    downloadUrl: "https://apps.apple.com/app/quantumult-x/id1453926364",
+    isPopular: true,
+    recommended: false,
+  },
+  {
+    name: "sing-box (SFI)",
+    os: "ios",
+    osLabel: "iPhone / iPad",
+    core: "sing-box 官方",
+    features: "轻盈原生内核，支持规则路由与多协议",
+    downloadType: "App Store",
+    downloadUrl: "https://apps.apple.com/app/sing-box/id6451272673",
+    isPopular: false,
+    recommended: true,
+  },
+
+  // macOS
+  {
+    name: "Clash Verge Rev (Mac)",
+    os: "macos",
+    osLabel: "macOS 苹果电脑",
+    core: "Mihomo 内核",
+    features: "原生适配 Apple Silicon M 系列与 Intel 芯片，支持 TUN 虚拟网卡模式",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/clash-verge-rev/clash-verge-rev",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Surge for Mac",
+    os: "macos",
+    osLabel: "macOS 苹果电脑",
+    core: "Surge 引擎",
+    features: "专业级网络分析与路由控制，开发者与生产力首选",
+    downloadType: "Official Site",
+    downloadUrl: "https://nssurge.com",
+    isPopular: true,
+    recommended: false,
+  },
+  {
+    name: "FlClash (Mac)",
+    os: "macos",
+    osLabel: "macOS 苹果电脑",
+    core: "Mihomo 内核",
+    features: "跨平台轻量界面，原生支持 ARM64 / x64",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/chen08209/FlClash",
+    isPopular: false,
+    recommended: false,
+  },
+
+  // Linux
+  {
+    name: "Clash Verge Rev (Linux)",
+    os: "linux",
+    osLabel: "Linux 桌面与服务器",
+    core: "Mihomo 内核",
+    features: "支持 AppImage、DEB、RPM 格式，提供现代桌面 GUI 控制",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/clash-verge-rev/clash-verge-rev",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "v2rayA",
+    os: "linux",
+    osLabel: "Linux 桌面与服务器",
+    core: "Xray / v2ray",
+    features: "基于 Web 控制界面的透明代理方案，极适合无头 Linux 主机与轻量路由",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/v2rayA/v2rayA",
+    isPopular: true,
+    recommended: true,
+  },
+
+  // OpenWrt / 软路由
+  {
+    name: "OpenClash",
+    os: "router",
+    osLabel: "OpenWrt / 软路由",
+    core: "Mihomo / Clash 内核",
+    features: "软路由全屋透明代理首选，支持高级覆写与分流规则管理",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/vernesong/OpenClash",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "PassWall 2",
+    os: "router",
+    osLabel: "OpenWrt / 软路由",
+    core: "Xray / sing-box",
+    features: "节点负载均衡、分流与黑白名单控制完备",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/xiaorouji/openwrt-passwall",
+    isPopular: true,
+    recommended: true,
+  },
+  {
+    name: "Nikki",
+    os: "router",
+    osLabel: "OpenWrt / 软路由",
+    core: "Mihomo 内核",
+    features: "针对 OpenWrt 24.10+ 原生设计的现代化透明代理管理插件",
+    downloadType: "GitHub",
+    downloadUrl: "https://github.com/nikkinikki-org/OpenWrt-nikki",
+    isPopular: false,
+    recommended: false,
+  },
+];
+
+export default CLIENTS;

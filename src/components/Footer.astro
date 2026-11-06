@@ -1,5 +1,4 @@
 ---
-import Link from "@/components/ui/Link.astro";
 import { useTranslations } from "~/i18n";
 
 const currentYear = new Date().getFullYear();
@@ -8,10 +7,7 @@ const siteTitle = t("site_title");
 ---
 
 <footer id="container">
-  <div>&copy; {currentYear} {siteTitle}</div>
-  <Link href="https://github.com/Aaakul/astro-plain">
-    Made with <strong>Astro Plain</strong>
-  </Link>
+  <div>&copy; {currentYear} {siteTitle}. All rights reserved.</div>
 </footer>
 
 <style>

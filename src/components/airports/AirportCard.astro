@@ -1,0 +1,297 @@
+---
+import type { AirportItem } from "@/data/airports";
+import type { Lang } from "~/i18n";
+
+interface Props {
+  airport: AirportItem;
+  lang: Lang;
+}
+
+const { airport, lang } = Astro.props;
+---
+
+<div
+  class="airport-card border-shadow"
+  data-line={airport.lineType}
+  data-protocols={airport.protocols.join(",")}
+  data-has-test={airport.hasRealTest ? "true" : "false"}
+>
+  <div class="card-header">
+    <div class="title-wrap">
+      <span class="rank-badge">#{airport.rank}</span>
+      <h3 class="brand-name">
+        <a href={`/${lang}/airports/${airport.slug}`} title={`${airport.name} 深度测评`}>
+          {airport.name}
+        </a>
+      </h3>
+      <span class="brand-en">{airport.enName}</span>
+    </div>
+    <div class="badge-row">
+      <span class="badge line-badge">{airport.lineType}</span>
+      {airport.hasRealTest && <span class="badge test-badge">🟢 附实测数据</span>}
+    </div>
+  </div>
+
+  <p class="summary-text">{airport.summary}</p>
+
+  <div class="specs-grid">
+    <div class="spec-item">
+      <span class="spec-label">起步价格</span>
+      <span class="spec-value price-val">{airport.startPrice}</span>
+    </div>
+    <div class="spec-item">
+      <span class="spec-label">支持协议</span>
+      <span class="spec-value">{airport.protocols.join(" / ")}</span>
+    </div>
+    <div class="spec-item">
+      <span class="spec-label">节点覆盖</span>
+      <span class="spec-value"
+        >{airport.nodeRegions.slice(0, 4).join(" · ")}{
+          airport.nodeRegions.length > 4 ? " 等" : ""
+        }</span
+      >
+    </div>
+    <div class="spec-item">
+      <span class="spec-label">优惠码</span>
+      <span
+        class="spec-value coupon-code"
+        title="点击复制"
+        onclick={`navigator.clipboard.writeText('${airport.couponCode}'); alert('已复制优惠码: ${airport.couponCode}')`}
+      >
+        <code>{airport.couponCode}</code>
+      </span>
+    </div>
+  </div>
+
+  <div class="features-wrap">
+    {airport.features.slice(0, 3).map((feat) => <span class="feat-tag">✓ {feat}</span>)}
+  </div>
+
+  <div class="card-footer">
+    <a href={`/${lang}/airports/${airport.slug}`} class="btn btn-secondary"> 查看深度评测 </a>
+    <a
+      href={airport.affLink}
+      target="_blank"
+      rel="nofollow sponsored noopener"
+      class="btn btn-primary"
+      title={`访问 ${airport.name} 官网`}
+    >
+      直达官网注册 &rarr;
+    </a>
+  </div>
+  <div class="disclosure-hint">
+    <span>* 含推广链接，通过链接注册可能为本站带来佣金，不影响用户支付价格</span>
+  </div>
+</div>
+
+<style>
+  .airport-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    transition:
+      transform var(--duration) ease,
+      border-color var(--duration) ease,
+      box-shadow var(--duration) ease;
+    position: relative;
+  }
+
+  .airport-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .title-wrap {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .rank-badge {
+    background-color: var(--primary);
+    color: var(--background);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-md);
+  }
+
+  .brand-name {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    margin: 0;
+  }
+
+  .brand-name a {
+    color: var(--foreground);
+    text-decoration: none;
+  }
+
+  .brand-name a:hover {
+    color: var(--primary);
+  }
+
+  .brand-en {
+    color: var(--muted-foreground);
+    font-size: var(--font-size-sm);
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    justify-content: flex-end;
+  }
+
+  .badge {
+    font-size: var(--font-size-xs);
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-sm);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .line-badge {
+    background-color: var(--accent);
+    color: var(--primary);
+    border: 1px solid var(--border);
+  }
+
+  .test-badge {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+
+  .summary-text {
+    color: var(--muted-foreground);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    margin-block: var(--space-2) var(--space-4);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+    background-color: var(--accent);
+    padding: var(--space-3);
+    border-radius: var(--radius-lg);
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-sm);
+  }
+
+  .spec-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .spec-label {
+    color: var(--muted-foreground);
+    font-size: var(--font-size-xs);
+  }
+
+  .spec-value {
+    color: var(--foreground);
+    font-weight: var(--font-weight-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .price-val {
+    color: #f59e0b;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .coupon-code {
+    cursor: pointer;
+  }
+
+  .coupon-code code {
+    background-color: rgba(14, 165, 233, 0.12);
+    color: var(--primary);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-family: monospace;
+  }
+
+  .features-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-bottom: var(--space-5);
+  }
+
+  .feat-tag {
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+    background-color: var(--background);
+    border: 1px dashed var(--border);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+  }
+
+  .card-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.9rem;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: none;
+    transition: all var(--duration) ease;
+    text-align: center;
+  }
+
+  .btn-primary {
+    background-color: var(--primary);
+    color: var(--background);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-secondary {
+    background-color: var(--accent);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:hover {
+    background-color: var(--border);
+  }
+
+  .disclosure-hint {
+    margin-top: var(--space-2);
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--muted-foreground);
+    opacity: 0.7;
+  }
+</style>

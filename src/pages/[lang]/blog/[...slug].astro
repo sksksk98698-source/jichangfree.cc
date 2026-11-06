@@ -47,20 +47,25 @@ if (!alternates) {
   throw new Error("Invalid translationKey");
 }
 
-// Determine canonical language: x-default > default language > current language
-const canonicalLanguage =
-  (alternates.get("x-default") as Lang | undefined) ??
-  (alternates.has(DEFAULT_LANG) ? DEFAULT_LANG : lang);
-
-// Convert all alternate slugs to absolute URLs for hreflang tags
+// Convert all alternate slugs to absolute URLs for hreflang tags on canonical site domain
 alternates.forEach((slug, language) => {
   if (language !== "x-default") {
-    alternates.set(language, new URL(`${basePath}/${language}/blog/${slug}`, Astro.url).href);
+    alternates.set(
+      language,
+      new URL(`${basePath}/${language}/blog/${slug}`, SiteConfig.siteUrl).href,
+    );
   }
 });
 
-const canonicalUrl = alternates.get(canonicalLanguage) ?? Astro.url.href;
-alternates.set("x-default", canonicalUrl);
+// Self-referential canonical URL for this post (SEO best practice)
+const selfCanonicalUrl =
+  alternates.get(lang as Lang) ??
+  new URL(`${basePath}/${lang}/blog/${post.id}`, SiteConfig.siteUrl).href;
+
+// x-default points to default language version
+const xDefaultUrl =
+  alternates.get(DEFAULT_LANG) ?? alternates.get(lang as Lang) ?? selfCanonicalUrl;
+alternates.set("x-default", xDefaultUrl);
 ---
 
 <RootLayout
@@ -68,7 +73,7 @@ alternates.set("x-default", canonicalUrl);
   title={title}
   description={summary}
   image={image?.src}
-  canonicalURL={canonicalUrl}
+  canonicalURL={selfCanonicalUrl}
   alternates={alternates}
   languageSwitchLinks={new Map(
     [...alternates.entries()]

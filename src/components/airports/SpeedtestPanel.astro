@@ -1,0 +1,235 @@
+---
+import type { SpeedMetric } from "@/data/airports";
+
+interface Props {
+  brandName: string;
+  testDate?: string;
+  speedData?: SpeedMetric[];
+  imagePath?: string;
+}
+
+const { brandName, testDate = "2026-08-11", speedData = [], imagePath } = Astro.props;
+---
+
+<div class="observatory-panel border-shadow">
+  <div class="panel-header">
+    <div class="header-left">
+      <span class="status-indicator"></span>
+      <span class="console-title">LAB NETWORK OBSERVATORY // 节点测速实测报告</span>
+    </div>
+    <span class="test-badge">晚高峰 20:30 实测批次 · {testDate}</span>
+  </div>
+
+  <div class="meta-bar">
+    <span class="meta-item"><strong>目标品牌:</strong> {brandName}</span>
+    <span class="meta-item"><strong>测试环境:</strong> Clash Verge Rev v1.5x (TUN 模式)</span>
+    <span class="meta-item"><strong>基准节点:</strong> Speedtest.net 测速集群</span>
+  </div>
+
+  {
+    speedData.length > 0 && (
+      <div class="metrics-container">
+        {speedData.map((metric) => (
+          <div class="metric-row">
+            <div class="row-info">
+              <span class="node-name">🟢 {metric.region}</span>
+              <span class="node-latency">
+                延迟: <code>{metric.latency}</code>
+              </span>
+              <span class="node-speed">
+                下载: <strong>{metric.download}</strong>
+              </span>
+            </div>
+            <div class="progress-track">
+              <div
+                class="progress-fill"
+                style={`width: ${Math.min(100, Math.max(25, parseInt(metric.download) / 5))}%`}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  {
+    imagePath && (
+      <div class="real-image-section">
+        <div class="image-title">
+          <span>📷 原生实验室测速控制台抓屏（无损归档）</span>
+        </div>
+        <div class="image-wrapper">
+          <img
+            src={imagePath}
+            alt={`${brandName} 晚高峰真实节点测速实测截图`}
+            loading="lazy"
+            class="speedtest-img"
+          />
+        </div>
+      </div>
+    )
+  }
+
+  <div class="panel-footer">
+    <span
+      >测试说明：以上数据基于实验室固定千兆宽带实测所得，网络波动可能受用户本地运营商及物理位置影响，建议先入手月付方案验证。</span
+    >
+    <span class="watermark">[jichangfree.cc]</span>
+  </div>
+</div>
+
+<style>
+  .observatory-panel {
+    background-color: #0b0f19;
+    color: #e2e8f0;
+    border: 1px solid #1e293b;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-block: var(--space-6);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #111827;
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid #1e293b;
+    font-size: var(--font-size-xs);
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .console-title {
+    font-weight: var(--font-weight-bold);
+    color: #38bdf8;
+    letter-spacing: 0.05em;
+  }
+
+  .test-badge {
+    color: #94a3b8;
+    background-color: #1e293b;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    background-color: rgba(15, 23, 42, 0.8);
+    padding: var(--space-2) var(--space-4);
+    border-bottom: 1px dashed #1e293b;
+    font-size: var(--font-size-xs);
+    color: #94a3b8;
+  }
+
+  .meta-bar strong {
+    color: #cbd5e1;
+  }
+
+  .metrics-container {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .metric-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .row-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-sm);
+  }
+
+  .node-name {
+    color: #f1f5f9;
+    font-weight: 600;
+  }
+
+  .node-latency code {
+    color: #38bdf8;
+    background-color: rgba(56, 189, 248, 0.1);
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+  }
+
+  .node-speed strong {
+    color: #10b981;
+  }
+
+  .progress-track {
+    height: 6px;
+    background-color: #1e293b;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #0284c7, #10b981);
+    border-radius: 3px;
+  }
+
+  .real-image-section {
+    padding: var(--space-4);
+    border-top: 1px solid #1e293b;
+    background-color: rgba(15, 23, 42, 0.5);
+  }
+
+  .image-title {
+    font-size: var(--font-size-xs);
+    color: #94a3b8;
+    margin-bottom: var(--space-2);
+  }
+
+  .image-wrapper {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid #334155;
+    background-color: #020617;
+  }
+
+  .speedtest-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .panel-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background-color: #0f172a;
+    border-top: 1px solid #1e293b;
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .watermark {
+    color: #475569;
+    font-weight: 700;
+  }
+</style>

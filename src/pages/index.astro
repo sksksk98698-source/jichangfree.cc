@@ -1,9 +1,14 @@
 ---
-import { DEFAULT_LANG, AVAILABLE_LANG } from "~/i18n";
+import { DEFAULT_LANG, AVAILABLE_LANG, useTranslations } from "~/i18n";
 import SiteConfig, { COOKIE_MAX_AGE } from "~/site.config";
 
 const BASE_PATH = SiteConfig.basePath;
 const defaultTarget = `${BASE_PATH ? BASE_PATH : ""}/${DEFAULT_LANG}`;
+const t = useTranslations("common");
+const siteTitle = t("site_title");
+const siteDescription = t("site_description");
+const canonicalUrl = new URL(`${BASE_PATH ? BASE_PATH : ""}/${DEFAULT_LANG}`, SiteConfig.siteUrl)
+  .href;
 ---
 
 <!doctype html>
@@ -12,7 +17,20 @@ const defaultTarget = `${BASE_PATH ? BASE_PATH : ""}/${DEFAULT_LANG}`;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <title>Redirecting...</title>
+    <title>{siteTitle}</title>
+    <meta name="description" content={siteDescription} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalUrl} />
+    {
+      AVAILABLE_LANG.map((l) => (
+        <link
+          rel="alternate"
+          hreflang={l}
+          href={new URL(`${BASE_PATH ? BASE_PATH : ""}/${l}`, SiteConfig.siteUrl).href}
+        />
+      ))
+    }
+    <link rel="alternate" hreflang="x-default" href={canonicalUrl} />
 
     {/* No-JS fallback: immediately redirect via HTML refresh */}
     <noscript>

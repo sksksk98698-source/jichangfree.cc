@@ -1,0 +1,630 @@
+---
+import RootLayout from "@/layouts/RootLayout.astro";
+import { AVAILABLE_LANG, useTranslations, type Lang } from "~/i18n";
+import { AIRPORTS, type AirportItem } from "@/data/airports";
+import SpeedtestPanel from "@/components/airports/SpeedtestPanel.astro";
+import UnlockMatrix from "@/components/airports/UnlockMatrix.astro";
+
+export async function getStaticPaths() {
+  return AVAILABLE_LANG.flatMap((lang) =>
+    AIRPORTS.map((airport) => ({
+      params: { lang, slug: airport.slug },
+      props: { airport },
+    })),
+  );
+}
+
+interface Props {
+  airport: AirportItem;
+}
+
+const { lang } = Astro.params;
+const { airport } = Astro.props;
+const t = useTranslations("common");
+
+const title = `${airport.name}怎么样？2026最新评测、节点测速图与优惠码 | 机场免费`;
+const description = `${airport.name}深度评测：主打${airport.lineType}，支持${airport.protocols.join("/")}协议。起步价仅${airport.startPrice}，附专属优惠码【${airport.couponCode}】。查看晚高峰真实测速与流媒体AI解锁报告。`;
+
+const pageUrl = `https://jichangfree.cc/${lang}/airports/${airport.slug}`;
+
+// Product & Review Schema for Rich SEO Snippets
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: airport.name,
+  description: airport.summary,
+  brand: {
+    "@type": "Brand",
+    name: airport.name,
+  },
+  offers: {
+    "@type": "Offer",
+    price: airport.startPrice.replace(/[^0-9.]/g, "") || "15",
+    priceCurrency: "CNY",
+    availability: "https://schema.org/InStock",
+    url: airport.affLink,
+  },
+  review: {
+    "@type": "Review",
+    reviewRating: {
+      "@type": "Rating",
+      ratingValue: airport.rank <= 5 ? "4.9" : airport.rank <= 15 ? "4.7" : "4.5",
+      bestRating: "5",
+    },
+    author: {
+      "@type": "Organization",
+      name: "机场免费评测实验室",
+    },
+  },
+};
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "首页",
+      item: `https://jichangfree.cc/${lang}`,
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "机场品牌库",
+      item: `https://jichangfree.cc/${lang}/airports`,
+    },
+    {
+      "@type": "ListItem",
+      position: 3,
+      name: airport.name,
+      item: pageUrl,
+    },
+  ],
+};
+---
+
+<RootLayout lang={lang as Lang} title={title} description={description} canonicalURL={pageUrl}>
+  <div slot="header" class="airport-detail-header">
+    <nav class="breadcrumb-nav" aria-label="Breadcrumb">
+      <a href={`/${lang}`}>{t("home")}</a>
+      <span class="sep">/</span>
+      <a href={`/${lang}/airports`}>机场品牌库</a>
+      <span class="sep">/</span>
+      <span class="current">{airport.name}</span>
+    </nav>
+
+    <div class="header-hero border-shadow">
+      <div class="hero-main">
+        <div class="brand-rank-wrap">
+          <span class="rank-tag">综合推荐榜 #{airport.rank}</span>
+          <span class="line-tag">{airport.lineType}</span>
+          <span class="rating-badge">★ 实验室综合评分: 4.9 / 5.0</span>
+          {airport.hasRealTest && <span class="test-tag">🟢 附晚高峰实测数据</span>}
+        </div>
+        <h1 class="brand-heading">{airport.name}</h1>
+        <p class="brand-subheading">{airport.enName} // 2026 深度实测与选购指南</p>
+        <p class="summary-paragraph">{airport.summary}</p>
+      </div>
+
+      <div class="hero-action-box">
+        <div class="price-callout">
+          <span class="price-desc">起步参考价</span>
+          <span class="price-big">{airport.startPrice}</span>
+        </div>
+        <div
+          class="coupon-box"
+          onclick={`navigator.clipboard.writeText('${airport.couponCode}'); alert('优惠码已复制: ${airport.couponCode}')`}
+        >
+          <span class="coupon-label">专属优惠码 (点击复制)：</span>
+          <code class="coupon-val">{airport.couponCode}</code>
+        </div>
+        <a href={airport.affLink} target="_blank" rel="nofollow sponsored noopener" class="btn-cta">
+          直达 {airport.name} 官网 &rarr;
+        </a>
+        <span class="aff-hint">* 含推广链接，不影响用户支付价格</span>
+      </div>
+    </div>
+  </div>
+
+  <div slot="content" class="detail-body">
+    <!-- GEO Direct Answer Section -->
+    <section class="section-card geo-box border-shadow">
+      <h2>📌 评测核心结论 (GEO 摘要)</h2>
+      <div class="geo-text">
+        <p><strong>{airport.name} 值得买吗？</strong></p>
+        <p>{airport.summary}</p>
+        <p><strong>最适合人群：</strong>{airport.targetUsers}。</p>
+        <p>
+          <strong>建议避坑指南：</strong>{
+            airport.cons[0] ||
+              "初次使用建议先选择月付或小额试用包，验证晚高峰本地连接质量后，再决定长期订购。"
+          }
+        </p>
+      </div>
+    </section>
+
+    <!-- Technical Specs -->
+    <section class="section-card border-shadow">
+      <h2>⚙️ 技术架构与参数细节</h2>
+      <div class="specs-table-grid">
+        <div class="table-row">
+          <span class="col-title">线路类型</span>
+          <span class="col-val">{airport.lineType}</span>
+        </div>
+        <div class="table-row">
+          <span class="col-title">支持协议</span>
+          <span class="col-val">{airport.protocols.join("、")}</span>
+        </div>
+        <div class="table-row">
+          <span class="col-title">客户端支持</span>
+          <span class="col-val">{airport.clientSupport.join("、")}</span>
+        </div>
+        <div class="table-row">
+          <span class="col-title">节点覆盖地区</span>
+          <span class="col-val">{airport.nodeRegions.join(" · ")}</span>
+        </div>
+        <div class="table-row">
+          <span class="col-title">优惠政策</span>
+          <span class="col-val">{airport.discountDesc}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Plans Table -->
+    {
+      airport.plans.length > 0 && (
+        <section class="section-card border-shadow">
+          <h2>💰 套餐价格与流量规格表</h2>
+          <div class="table-responsive">
+            <table class="plans-table">
+              <thead>
+                <tr>
+                  <th>套餐名称</th>
+                  <th>计费方式</th>
+                  <th>套餐价格</th>
+                  <th>可用流量</th>
+                </tr>
+              </thead>
+              <tbody>
+                {airport.plans.map((plan) => (
+                  <tr>
+                    <td>
+                      <strong>{plan.name}</strong>
+                    </td>
+                    <td>{plan.cycle}</td>
+                    <td class="price-cell">{plan.price}</td>
+                    <td>{plan.bandwidth}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Speedtest Report Panel -->
+    <section class="section-card-noborder">
+      <h2>⚡ 晚高峰真实节点测速实测报告</h2>
+      <SpeedtestPanel
+        brandName={airport.name}
+        testDate={airport.testDate}
+        speedData={airport.speedData}
+        imagePath={airport.speedtestImage}
+      />
+    </section>
+
+    <!-- Unlock Matrix Panel -->
+    <section class="section-card-noborder">
+      <h2>🌍 AI 生产力工具与流媒体解锁能力</h2>
+      <UnlockMatrix
+        brandName={airport.name}
+        unlockStatus={airport.unlockStatus}
+        unlockImages={airport.unlockImages}
+      />
+    </section>
+
+    <!-- Pros and Cons -->
+    <section class="section-card border-shadow">
+      <h2>⚖️ 优缺点客观分析</h2>
+      <div class="pros-cons-grid">
+        <div class="pro-col">
+          <h3>✅ 优势亮点</h3>
+          <ul>
+            {airport.pros.map((p) => <li>{p}</li>)}
+          </ul>
+        </div>
+        <div class="con-col">
+          <h3>⚠️ 考虑因素与限制</h3>
+          <ul>
+            {airport.cons.map((c) => <li>{c}</li>)}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    {
+      airport.faq.length > 0 && (
+        <section class="section-card border-shadow">
+          <h2>❓ {airport.name} 常见问题解答</h2>
+          <div class="faq-list">
+            {airport.faq.map((item) => (
+              <div class="faq-row">
+                <h4>Q: {item.q}</h4>
+                <p>A: {item.a}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <!-- Bottom CTA Banner -->
+    <div class="bottom-cta-banner border-shadow">
+      <div class="cta-left">
+        <h3>准备好体验 {airport.name} 了吗？</h3>
+        <p>
+          点击下方按钮直达官网注册，使用专属优惠码【<strong>{airport.couponCode}</strong
+          >】享优惠价格。
+        </p>
+      </div>
+      <div class="cta-right">
+        <a
+          href={airport.affLink}
+          target="_blank"
+          rel="nofollow sponsored noopener"
+          class="btn-cta-large"
+        >
+          立即前往官方网站 &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(productSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+  </div>
+</RootLayout>
+
+<style>
+  .airport-detail-header {
+    margin-bottom: var(--space-8);
+  }
+
+  .breadcrumb-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+    margin-bottom: var(--space-4);
+  }
+
+  .breadcrumb-nav a {
+    color: var(--muted-foreground);
+    text-decoration: none;
+  }
+
+  .breadcrumb-nav a:hover {
+    color: var(--primary);
+  }
+
+  .header-hero {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-6);
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6) var(--space-8);
+  }
+
+  .brand-rank-wrap {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .rank-tag {
+    background-color: var(--primary);
+    color: var(--background);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .line-tag {
+    background-color: var(--accent);
+    color: var(--primary);
+    font-size: var(--font-size-xs);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .test-tag {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    font-size: var(--font-size-xs);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .rating-badge {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semi-bold);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-md);
+  }
+
+  .brand-heading {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--foreground);
+    margin: 0 0 var(--space-1) 0;
+  }
+
+  .brand-subheading {
+    color: var(--muted-foreground);
+    font-size: var(--font-size-sm);
+    margin: 0 0 var(--space-3) 0;
+  }
+
+  .summary-paragraph {
+    color: var(--foreground);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .hero-action-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    text-align: center;
+  }
+
+  .price-desc {
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+  }
+
+  .price-big {
+    display: block;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-bold);
+    color: #f59e0b;
+    margin-bottom: var(--space-2);
+  }
+
+  .coupon-box {
+    background-color: var(--background);
+    border: 1px dashed var(--border);
+    padding: var(--space-2);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-3);
+    cursor: pointer;
+  }
+
+  .coupon-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+  }
+
+  .coupon-val {
+    color: var(--primary);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
+    font-family: monospace;
+  }
+
+  .btn-cta {
+    display: block;
+    background-color: var(--primary);
+    color: var(--background);
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-lg);
+    font-weight: var(--font-weight-semi-bold);
+    text-decoration: none;
+    transition: filter var(--duration) ease;
+  }
+
+  .btn-cta:hover {
+    filter: brightness(1.1);
+  }
+
+  .aff-hint {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--muted-foreground);
+    margin-top: var(--space-2);
+  }
+
+  .detail-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .section-card {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6) var(--space-8);
+  }
+
+  .section-card h2,
+  .section-card-noborder h2 {
+    font-size: var(--font-size-xl);
+    color: var(--foreground);
+    margin-top: 0;
+    margin-bottom: var(--space-4);
+  }
+
+  .geo-box {
+    background-color: var(--accent);
+    border-left: 4px solid var(--primary);
+  }
+
+  .geo-text p {
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    margin-block: 0 var(--space-2);
+  }
+
+  .specs-table-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-2);
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    padding: var(--space-2) var(--space-3);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--font-size-sm);
+  }
+
+  .col-title {
+    color: var(--muted-foreground);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .col-val {
+    color: var(--foreground);
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+  }
+
+  .plans-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-size-sm);
+  }
+
+  .plans-table th,
+  .plans-table td {
+    padding: var(--space-3);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .plans-table th {
+    background-color: var(--accent);
+    color: var(--muted-foreground);
+    font-weight: var(--font-weight-semi-bold);
+  }
+
+  .price-cell {
+    color: #f59e0b;
+    font-weight: var(--font-weight-bold);
+  }
+
+  .pros-cons-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+  }
+
+  .pro-col h3,
+  .con-col h3 {
+    font-size: var(--font-size-base);
+    margin-top: 0;
+  }
+
+  .pro-col ul,
+  .con-col ul {
+    margin: 0;
+    padding-left: var(--space-4);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    color: var(--foreground);
+  }
+
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .faq-row h4 {
+    margin: 0 0 var(--space-1) 0;
+    color: var(--foreground);
+    font-size: var(--font-size-base);
+  }
+
+  .faq-row p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+  }
+
+  .bottom-cta-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    background-color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6) var(--space-8);
+  }
+
+  .cta-left h3 {
+    margin: 0 0 var(--space-1) 0;
+    font-size: var(--font-size-lg);
+  }
+
+  .cta-left p {
+    margin: 0;
+    color: var(--muted-foreground);
+    font-size: var(--font-size-sm);
+  }
+
+  .btn-cta-large {
+    display: inline-block;
+    background-color: var(--primary);
+    color: var(--background);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-bold);
+    text-decoration: none;
+    transition: filter var(--duration) ease;
+  }
+
+  .btn-cta-large:hover {
+    filter: brightness(1.1);
+  }
+
+  @media screen and (max-width: 768px) {
+    .header-hero {
+      grid-template-columns: 1fr;
+    }
+    .pros-cons-grid {
+      grid-template-columns: 1fr;
+    }
+    .table-row {
+      grid-template-columns: 120px 1fr;
+    }
+  }
+</style>

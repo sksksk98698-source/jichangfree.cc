@@ -1,210 +1,128 @@
-# Astro Plain
+# 🚀 机场免费 (JichangFree)
 
-![Astro Plain](/src/assets/screenshot.jpg)
+<p align="center">
+  <img src="public/favicon.svg" width="96" height="96" alt="JichangFree Logo" />
+</p>
 
-A minimalist multilingual static blog template built on [Astro](https://astro.build/), with no CSS / UI framework dependencies.
+<p align="center">
+  <strong>2026 最新好用的 42 家高速稳定机场推荐 · IEPL/IPLC 专线节点实测与全平台订阅配置指南</strong>
+</p>
 
-[View Live Demo](https://astro-plain-demo.pages.dev) · [Lighthouse 100/100 Report](https://pagespeed.web.dev/analysis/https-astro-plain-demo-pages-dev-en-US-blog-sample-intro/koeoulhg15?form_factor=mobile)
+<p align="center">
+  <a href="https://jichangfree.cc"><img src="https://img.shields.io/badge/Official%20Site-jichangfree.cc-0284c7?style=flat-square&logo=googlechrome&logoColor=white" alt="Official Website" /></a>
+  <a href="https://astro.build"><img src="https://img.shields.io/badge/Built%20with-Astro%20v7-ff5d01?style=flat-square&logo=astro&logoColor=white" alt="Astro" /></a>
+  <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/Tailwind-CSS-38bdf8?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" /></a>
+  <a href="https://pagefind.app"><img src="https://img.shields.io/badge/Search-Pagefind-10b981?style=flat-square" alt="Pagefind" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square" alt="License" /></a>
+</p>
 
-[简体中文](/README.zh-Hans.md) | [日本語](/README.ja-JP.md)
-
-## Features
-
-- **High-Performance Minimal Architecture**: Built on [Astro](https://astro.build/) Static Site Generation (SSG), with no CSS / UI framework dependencies. Achieves a perfect 100/100 Lighthouse score across all categories.
-- **Internationalization (i18n) & SEO**:
-  - Built-in Simplified Chinese, English, and Japanese translations, powered by [`ts-intl-astro`](https://github.com/aaakul/ts-intl).
-  - Subpath-based static multilingual routing (e.g., `/zh-Hans/`, `/en-US/`, `/ja-JP/`).
-  - Smart language redirect: automatically selects the site language based on language preference cookie or browser language.
-  - Automatic generation of multilingual SEO tags (`hreflang` / `x-default` / Open Graph).
-  - Automatic generation of sitemap, `robots.txt`, and per-language RSS feeds.
-- **Offline Full-Text Search**: Integrated [Pagefind](https://pagefind.app/) static search engine, zero configuration required.
-- **Modern Markdown / MDX Writing Experience**:
-  - Type-safe content collections based on Zod and [Astro Content Layer](https://docs.astro.build/en/guides/content-collections/).
-  - Code highlighting powered by [Expressive Code](https://expressive-code.com/).
-  - Built-in utility MDX components: file tree ([`FileTree`](https://starlight.astro.build/en/guides/components/#file-tree)), step-by-step instructions ([`Steps`](https://starlight.astro.build/en/guides/components/#steps)), tabs ([`Tabs`](https://starlight.astro.build/en/guides/components/#tabs)), and GitHub-style alert blockquotes ([`remark-github-blockquote-alert`](https://github.com/jaywcjlove/remark-github-blockquote-alert))
-    .
-- **Other Features**: Support for [Disqus](https://disqus.com/) comment system and [Microsoft Clarity](https://clarity.microsoft.com/) site analytics.
-
-## Getting Started
-
-### Installation
-
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/Aaakul/astro-plain.git
-   cd astro-plain
-   ```
-
-2. Install dependencies:
-
-   ```bash
-   # npm
-   npm install
-
-   # pnpm
-   pnpm install
-
-   # bun
-   bun install
-   ```
-
-3. Start the development server:
-
-   ```bash
-   # npm
-   npm run dev
-
-   # pnpm
-   pnpm run dev
-
-   # bun
-   bun --bun run dev
-   ```
-
-   The development server runs at `http://127.0.0.1:4321` by default.
-
-> [!NOTE]
-> `Pagefind` relies on static build output to generate its index. You must run the build command at least once before using it in the development environment for the first time.
-> After adding or modifying posts, the dev server will not automatically regenerate the search index.
-
-## Configuration
-
-### Site Configuration
-
-The core configuration file is `site.config.ts`, with key options as follows:
-
-| Option                   | Description                                                                      | Default                   |
-| :----------------------- | :------------------------------------------------------------------------------- | :------------------------ |
-| `defaultLanguage`        | Default language code                                                            | `"zh-Hans"`               |
-| `siteUrl`                | Site URL (can also be set via environment variable `SITE_URL`)                   | `"http://127.0.0.1:4321"` |
-| `basePath`               | Subpath deployment prefix (can also be set via environment variable `BASE_PATH`) | `""`                      |
-| `languageNameMap`        | Mapping of language codes to display names                                       | See config file           |
-| `postsPerPage`           | Number of posts per page in the blog list                                        | `5`                       |
-| `navLinks`               | Top navigation bar links                                                         | See config file           |
-| `ogImage`                | Default social sharing image (OG Image), recommended size 1200x630               | `"/static/images/og.jpg"` |
-| `allowRobots`            | Whether to allow crawlers                                                        | `true`                    |
-| `disqus`                 | Disqus comments (`enable` + `shortname`)                                         | Disabled                  |
-| `clarity`                | Microsoft Clarity (`enable` + `projectId`)                                       | Disabled                  |
-| `googleSiteVerification` | Google site ownership verification code                                          | `""`                      |
-
-### Environment Variables
-
-Refer to the comments in `.env.example` to create a `.env` file, where you can set `SITE_URL`, `BASE_PATH`, Google site ownership verification, as well as Disqus and Clarity services.
-
-### Modifying Site Title and Description
-
-Modify the following fields in the translation files `i18n/messages/*.ts`:
-
-- `common.header_title`
-- `common.site_title`
-- `common.site_description`
-
-### Replacing Favicons and Images
-
-Replace the following files:
-
-- `public/favicon.ico`
-- `public/favicon.svg`
-- `public/apple-touch-icon.png`
-- `public/static/images/og.jpg`
-- `src/assets/*`
-
-## Content Creation
-
-Content files are located in `src/content/`, with schemas defined in `src/content.config.ts`.
-
-### Hero Section
-
-Corresponding files are located at `src/content/mdx/<language-code>/hero.mdx`.
-
-### Posts (`src/content/blog/`)
-
-Both Markdown and MDX formats are supported. Post Frontmatter example:
-
-```yaml
 ---
-title: "Post Title" # Required
-translationKey: "unique-key" # Required: used to associate posts across different language versions
-language: "zh-Hans" # Required: language code, must be declared in languageNameMap
-date: "2026-08-30T10:00:00Z" # Required: ISO 8601 format
-summary: "Post summary" # Optional: used for list display and SEO
-lastmod: "2026-08-30T12:00:00Z" # Optional: last modified date
-isCanonical: true # Optional: set as canonical language version (generates x-default/canonical)
-draft: false # Optional: drafts are excluded from builds
-authors: ["default"] # Optional: author list
-categories: ["Tech"] # Optional
-tags: ["Astro"] # Optional
-image: "@/assets/banner.jpg" # Optional: post cover image
-enableComments: false # Optional: whether to enable comments, defaults to true
+
+## 📖 项目简介 (Overview)
+
+**机场免费 ([jichangfree.cc](https://jichangfree.cc))** 是一个基于 **Astro 7 现代全静态架构 (SSG)** 构建的高性能网络加速节点评测与订阅指南门户。
+
+基于评测实验室**连续 90 天晚高峰千兆真实压测数据**，深度横评 42 家主流机场品牌，穿透 IEPL/IPLC 内网专线、公网 BGP 中转与主流协议特性，为用户提供专业客观的选型决策树、防跑路避坑指南及全平台客户端调优手册。
+
 ---
+
+## ✨ 核心特性 (Key Features)
+
+- ⚡ **极致性能与纯静态架构**：基于 Astro 纯静态生成（SSG），100% 预渲染，Pagefind 本地静态全文检索，无需后端数据库，页面秒开。
+- 📊 **42 家机场品牌横向横评库**：多维记录起步价格、专线拓扑、节点规模、流媒体与 AI 解锁状态，支持手机与桌面端防溢出滑动对照。
+- 🛠️ **全平台客户端教程中心**：涵盖 Windows、macOS、Android、iOS 及软路由，详尽指导 Mihomo/Xray 内核、TUN 虚拟网卡全接管与 Fake-IP 模式调优。
+- 🔍 **专著级深度技术内容**：首页、客户端页及关于页均为 10,000+ 纯汉字专著级硬核评测，严格遵循活人感中文写作规范。
+- 🌐 **完备的技术 SEO & GEO 优化**：
+  - 规范化 Canonical 矩阵与 XML Sitemap 自动生成。
+  - 严谨的 Schema.org 结构化数据 (`WebSite`, `Organization`, `Product`, `ItemList`, `FAQPage`, `HowTo`)。
+  - 出站引流外链全量附带 `rel="nofollow sponsored noopener"`，有效预防算法风险。
+  - 预留 Google Search Console、Bing Webmaster、百度、神马站长平台所有权验证接口。
+- 🌍 **原生国际化 (i18n)**：支持 `zh-Hans`（简体中文）、`en-US`（英文）、`ja-JP`（日文）三语切换与 SEO hreflang 多语言映射。
+
+---
+
+## 🗂️ 目录结构 (Repository Structure)
+
+```bash
+jichangfree.cc/
+├── public/                 # 静态资源 (Favicon, robots.txt, headers)
+├── src/
+│   ├── assets/             # 图片与本地素材
+│   ├── components/         # Astro 可复用 UI 组件 (Header, Footer, 卡片等)
+│   ├── content/            # MDX 内容合集 (博文白皮书、团队介绍、英雄区)
+│   ├── data/               # 42 家机场与客户端结构化数据库
+│   ├── layouts/            # 页面母版布局 (RootLayout, PostLayout, AuthorLayout)
+│   └── pages/              # 路由页面 ([lang]/index, airports, clients, about 等)
+├── astro.config.mjs        # Astro 配置文件 (Sitemap, ExpressiveCode, MDX)
+├── site.config.ts          # 站点核心配置 (SEO、多语言、验证码等)
+└── package.json            # 项目依赖与运行脚本
 ```
 
-> [!NOTE]
-> Multilingual association (`translationKey`): For the same post in different languages, declare the same `translationKey` in their respective Frontmatter, and the template will automatically generate language switcher links and hreflang tags.
-
-### Authors (`src/content/author/<language-code>/`)
-
-The default author file is `default.mdx`. Example:
-
-```yaml
 ---
-name: "Author Name" # Required
-language: "zh-Hans" # Required
-avatar: "@/assets/avatar.svg"
-occupation: "Occupation"
-company: "Company Name"
-email: "hello@example.com"
-link:
-  github: "https://github.com/username"
----
+
+## 🛠️ 本地开发与构建 (Getting Started)
+
+### 前置环境
+
+- [Node.js](https://nodejs.org/) `>= 18.14.1` (推荐 Node.js 20+)
+- [pnpm](https://pnpm.io/) `>= 9.0.0`
+
+### 1. 克隆仓库
+
+```bash
+git clone https://github.com/sksksk98698-source/jichangfree.cc.git
+cd jichangfree.cc
 ```
 
-### Project Showcase (`src/content/project/`)
+### 2. 安装依赖
 
-```yaml
----
-name: "Astro Plain" # Required: project title
-language: "zh-Hans" # Required: language code
-website: "https://example.com"
-image: "@/assets/project-preview.png"
-link:
-  github: "https://github.com/Aaakul/astro-plain"
----
-Body content...
+```bash
+pnpm install
 ```
 
-### Adding a New Language
+### 3. 启动本地开发服务
 
-1. Add the language code to `languageNameMap` in `site.config.ts` (e.g., `"fr-FR": "Français"`).
-2. Create the corresponding translation dictionary file under `i18n/messages/` (e.g., `fr-FR.ts`).
-3. Import and register the dictionary in `createI18n` in `i18n/index.ts`.
-4. Create an author file containing at least `default.mdx` under `src/content/author/<language-code>/`.
+```bash
+pnpm run dev
+```
 
-## Deployment
+本地服务默认启动在：`http://localhost:4321/`
 
-The project outputs pure static files upon build completion, with the output directory being `dist`.
+### 4. 生产环境构建
 
-### Example: Cloudflare Pages
+```bash
+pnpm run build
+```
 
-1. Fork this repository to your own GitHub account.
+构建完成后，编译产物输出至 `dist/` 目录，并自动生成离线全文索引及站点地图。
 
-2. Log in to the [Cloudflare Dashboard](https://dash.cloudflare.com), click **Compute -> Workers and Pages -> Create Application -> Continue to Pages**, and connect your GitHub repository.
+### 5. 本地预览生产构建产物
 
-3. Configure build settings:
+```bash
+pnpm run preview
+```
 
-   - **Build command**:
+---
 
-     ```bash
-     npm run build
-     ```
+## ⚙️ 环境变量配置 (Environment Variables)
 
-   - **Build output directory**: `dist`
+复制 `.env.example` 为 `.env` 进行自定义配置：
 
-   - **Environment variables**: Set `SITE_URL` to the domain after deployment (e.g., `https://example.pages.dev`), and configure Disqus and Clarity variables as needed.
+```env
+# 网站正式部署域名 (末尾不要带斜杠)
+SITE_URL=https://jichangfree.cc
 
-4. Save and deploy. Any subsequent push to the `main` branch will automatically trigger a new build and deployment.
+# 搜索引擎所有权验证 (可选)
+GOOGLE_SITE_VERIFICATION=your_google_code
+BING_SITE_VERIFICATION=your_bing_code
+BAIDU_SITE_VERIFICATION=your_baidu_code
+SHENMA_SITE_VERIFICATION=your_shenma_code
+```
 
-## License
+---
 
-This project is open-sourced under the MIT License. Stars, PRs, and Issues are welcome.
+## 🤝 贡献与声明 (Disclaimer & License)
+
+- 本项目评测数据由评测实验室自费采集，保持客观独立中立立场。
+- 节点配置与加速方案仅供网络技术学习、学术科研与跨境商业出海参考，请严格遵守当地法律法规。
+- 本项目开源遵循 [MIT License](LICENSE)。

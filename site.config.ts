@@ -28,7 +28,7 @@ const SiteConfig = {
   },
 
   /** 网站根地址 / Site URL / サイトの URL */
-  siteUrl: getEnv("SITE_URL")?.replace(/\/+$/, "") || "http://127.0.0.1:4321",
+  siteUrl: getEnv("SITE_URL")?.replace(/\/+$/, "") || "https://jichangfree.cc",
 
   /** 基础路径 (子目录部署) / Base Path (subdirectory deployment) / ベースパス (サブディレクトリデプロイ) */
   basePath: normalizedBasePath,
@@ -45,9 +45,9 @@ const SiteConfig = {
   /** 顶部导航栏链接配置 / Header navigation links / ヘッダーナビゲーションリンク */
   navLinks: [
     { href: "", titleKey: "home" },
-    { href: "/projects", titleKey: "projects" },
+    { href: "/airports", titleKey: "airports" },
+    { href: "/clients", titleKey: "clients" },
     { href: "/about", titleKey: "about" },
-    { href: "/search", titleKey: "search" },
   ],
 
   /** Disqus 评论配置 / Disqus Comments Configuration / Disqus コメント設定 */
@@ -62,8 +62,17 @@ const SiteConfig = {
     projectId: getEnv("CLARITY_PROJECT_ID") || "",
   },
 
-  /** Google 网站所有权验证 / Google Site Verification / Google サイトの所有権の確認 */
+  /** Google 网站所有权验证 / Google Site Verification */
   googleSiteVerification: getEnv("GOOGLE_SITE_VERIFICATION") || "",
+
+  /** Bing 网站所有权验证 / Bing Webmaster Verification */
+  bingSiteVerification: getEnv("BING_SITE_VERIFICATION") || "",
+
+  /** 百度搜索资源平台验证 / Baidu Site Verification */
+  baiduSiteVerification: getEnv("BAIDU_SITE_VERIFICATION") || "",
+
+  /** 神马站长平台验证 / Shenma Site Verification */
+  shenmaSiteVerification: getEnv("SHENMA_SITE_VERIFICATION") || "",
 
   /** 是否在 Header 中显示 Logo / Whether to display logo in header / ヘッダーにロゴを表示するかどうか */
   isShowLogo: true,
@@ -109,6 +118,9 @@ export interface SiteConfigType {
   };
 
   googleSiteVerification?: string;
+  bingSiteVerification?: string;
+  baiduSiteVerification?: string;
+  shenmaSiteVerification?: string;
 
   isShowLogo: boolean;
 

@@ -51,7 +51,7 @@ const t = useTranslations("common");
 const { tagList, categoryList } = await getTopics(lang);
 ---
 
-<RootLayout noindex languageSwitchLinks={new Map(AVAILABLE_LANG.map((l) => [l, `/${l}/search`]))}>
+<RootLayout noindex languageSwitchLinks={new Map(AVAILABLE_LANG.map((l) => [l, `/${l}`]))}>
   <h1 slot="header">{t("tag")} : {displayTag ?? currentTag}</h1>
 
   <TwoColumnLayout slot="content">

@@ -1,5 +1,5 @@
 ---
-import { AVAILABLE_LANG, useTranslations } from "~/i18n";
+import { AVAILABLE_LANG, useTranslations, type Lang } from "~/i18n";
 import AuthorLayout from "@/layouts/AuthorLayout.astro";
 import RootLayout from "@/layouts/RootLayout.astro";
 import { getCollection, render } from "astro:content";
@@ -9,6 +9,7 @@ import FileTree from "@/components/mdx/FileTree.astro";
 import Tabs from "@/components/mdx/Tabs.astro";
 import TabItem from "@/components/mdx/TabItem.astro";
 import Icon from "@/components/ui/Icon.astro";
+import SiteConfig from "~/site.config";
 
 export async function getStaticPaths() {
   return AVAILABLE_LANG.map((lang) => ({
@@ -27,19 +28,121 @@ const author = (
 
 const { name, avatar } = author.data;
 
-const { Content } = await render(author);
+const { Content, headings } = await render(author);
 
 const t = useTranslations("common");
+
+// Targeted, highly descriptive SEO title and meta description
+const isZh = lang === "zh-Hans";
+const pageTitle = isZh
+  ? `关于 机场 Free 评测组 | 2026 独立网络节点评测体系、42家梯队实测与专线选购避坑指南`
+  : `${t("about")} ${name}`;
+
+const pageDescription = isZh
+  ? `机场 Free 评测组（JichangFree Labs）独立发布 2026 年度网络加速节点全景评测报告。本文公布晚高峰压测方法论、三大运营商物理拓扑，深度对比 42 家机场品牌梯队、IEPL/IPLC 专线与新兴代理协议，并提供 10000+ 字专著级选型决策树、防跑路避坑手册与客户端调优方案。`
+  : `${t("about")} ${name}`;
+
+// Canonical and hreflang configuration
+const canonicalURL = new URL(`${SiteConfig.basePath}/${lang}/about`, SiteConfig.siteUrl).href;
+const alternates = new Map<Lang | "x-default", string>();
+AVAILABLE_LANG.forEach((l) => {
+  alternates.set(l, new URL(`${SiteConfig.basePath}/${l}/about`, SiteConfig.siteUrl).href);
+});
+alternates.set(
+  "x-default",
+  new URL(`${SiteConfig.basePath}/zh-Hans/about`, SiteConfig.siteUrl).href,
+);
+
+// Schema.org Structured Data
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "@id": `${canonicalURL}#webpage`,
+    url: canonicalURL,
+    name: pageTitle,
+    description: pageDescription,
+    inLanguage: lang,
+    mainEntity: {
+      "@type": "Organization",
+      "@id": `${SiteConfig.siteUrl}/#organization`,
+      name: "JichangFree Labs 机场 Free 评测组",
+      url: SiteConfig.siteUrl,
+      logo: new URL("/avatar.svg", SiteConfig.siteUrl).href,
+      email: "contact@jichangfree.cc",
+      sameAs: ["https://jichangfree.cc/zh-Hans/airports", "https://jichangfree.cc/zh-Hans/clients"],
+      knowsAbout: [
+        "跨境网络加速",
+        "IEPL 专线网络",
+        "IPLC 专线网络",
+        "Shadowsocks 协议",
+        "Hysteria 2 协议",
+        "Clash Verge Rev 客户端调优",
+        "流媒体原生解锁检测",
+      ],
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "机场服务商会不会看到我的个人银行密码与聊天内容？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "不会。现代互联网全面普及端到端 HTTPS 与 TLS 加密协议，传输数据在离开用户设备前已被公钥高强度加密。机场节点机房仅能感知目标服务器 IP 地址与域名，无法解密还原通信内容与密码。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "既然买机场可能遇到跑路，为什么不自己买境外 VPS 搭建节点？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "自建 VPS 通常只能依赖单一机房的公网线路，IP 一旦被封锁需自行承担高额换 IP 费用甚至整机报废；而优质商业机场拥有覆盖全球的节点冗余与个人难以承担的物理企业专线，兼具容灾能力与性价比。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "为什么测速软件显示几百兆，看 YouTube 却依然频繁卡顿？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "测速软件基于多线程短时并发突发，反映的是多连接汇总峰值；在线流媒体主要依赖单线程长连接。若节点延迟抖动大、丢包率高，播放器就会频繁断流缓冲。选购时应重点关注单线程平稳速率而非虚高总带宽。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "节点名称里的 0.1x 或者 2.0x 倍率到底是什么意思？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "倍率是实际消耗流量与计费扣除流量的乘积系数。0.1x 低倍率节点下载 10G 仅扣除 1G 流量，适合挂机下载；2.0x 高倍率专线节点下载 10G 将扣除 20G 套餐流量。使用时需留意后缀倍率标注。",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "开启代理后为什么国内某些 App 会提示异地登录或无法打开？",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "这是由于客户端分流规则未完善，导致国内流量误走海外节点触发平台风控。应将分流模式切换为 Rule 规则分流，确保大陆域名与 GeoIP CN 段配置为 Direct 直连。",
+        },
+      },
+    ],
+  },
+];
 ---
 
 <RootLayout
-  title={`${t("about")} ${name}`}
-  description={`${t("about")} ${name}`}
+  title={pageTitle}
+  description={pageDescription}
   image={avatar?.src}
   type="profile"
   username={name}
+  canonicalURL={canonicalURL}
+  alternates={alternates}
 >
-  <AuthorLayout {...author.data} slot="content">
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="header" />
+
+  <AuthorLayout {...author.data} headings={headings} slot="content">
     <Content components={{ a: CustomLink, Steps: Steps, FileTree, Tabs, TabItem, Icon }} />
   </AuthorLayout>
 </RootLayout>

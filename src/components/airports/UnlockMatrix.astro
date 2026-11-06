@@ -1,0 +1,225 @@
+---
+interface Props {
+  brandName: string;
+  unlockStatus: {
+    chatgpt: "support" | "partial" | "unsupported" | "untested";
+    claude: "support" | "partial" | "unsupported" | "untested";
+    netflix: "support" | "partial" | "unsupported" | "untested";
+    disney: "support" | "partial" | "unsupported" | "untested";
+    youtube: "support" | "partial" | "unsupported" | "untested";
+  };
+  unlockImages?: string[];
+}
+
+const { brandName, unlockStatus, unlockImages = [] } = Astro.props;
+
+const statusConfig = {
+  support: { icon: "✅", label: "支持 / 原生解锁", class: "status-ok" },
+  partial: { icon: "⚠️", label: "部分节点支持", class: "status-warn" },
+  unsupported: { icon: "❌", label: "暂不支持", class: "status-err" },
+  untested: { icon: "⏳", label: "待独立测试", class: "status-pending" },
+};
+---
+
+<div class="unlock-panel border-shadow">
+  <div class="panel-header">
+    <span class="panel-title">🎬 AI 生产力与全球流媒体可用性实测矩阵</span>
+    <span class="node-tag">香港 / 新加坡 / 日本落地节点验证</span>
+  </div>
+
+  <div class="matrix-grid">
+    <div class="matrix-card">
+      <div class="category-header">AI 智能与生产力工具</div>
+      <div class="service-list">
+        <div class="service-item">
+          <span class="service-name">ChatGPT (GPT-4o)</span>
+          <span class={`status-pill ${statusConfig[unlockStatus.chatgpt].class}`}>
+            {statusConfig[unlockStatus.chatgpt].icon}
+            {statusConfig[unlockStatus.chatgpt].label}
+          </span>
+        </div>
+        <div class="service-item">
+          <span class="service-name">Claude 3.5 Sonnet</span>
+          <span class={`status-pill ${statusConfig[unlockStatus.claude].class}`}>
+            {statusConfig[unlockStatus.claude].icon}
+            {statusConfig[unlockStatus.claude].label}
+          </span>
+        </div>
+        <div class="service-item">
+          <span class="service-name">Google Gemini Advanced</span>
+          <span class={`status-pill ${statusConfig.partial.class}`}>
+            ⚠️ 需挑选美国/台湾原生节点
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="matrix-card">
+      <div class="category-header">4K 全球影音与流媒体</div>
+      <div class="service-list">
+        <div class="service-item">
+          <span class="service-name">Netflix 原创与非自制剧</span>
+          <span class={`status-pill ${statusConfig[unlockStatus.netflix].class}`}>
+            {statusConfig[unlockStatus.netflix].icon}
+            {statusConfig[unlockStatus.netflix].label}
+          </span>
+        </div>
+        <div class="service-item">
+          <span class="service-name">Disney+ (Star 国际区)</span>
+          <span class={`status-pill ${statusConfig[unlockStatus.disney].class}`}>
+            {statusConfig[unlockStatus.disney].icon}
+            {statusConfig[unlockStatus.disney].label}
+          </span>
+        </div>
+        <div class="service-item">
+          <span class="service-name">YouTube 4K HDR & Premium</span>
+          <span class={`status-pill ${statusConfig[unlockStatus.youtube].class}`}>
+            {statusConfig[unlockStatus.youtube].icon}
+            {statusConfig[unlockStatus.youtube].label}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {
+    unlockImages.length > 0 && (
+      <div class="screenshots-section">
+        <div class="section-title">
+          <span>📸 实验室流媒体与 IP 纯净度实测截图（归档）：</span>
+        </div>
+        <div class="screenshots-grid">
+          {unlockImages.map((img, idx) => (
+            <div class="screenshot-item">
+              <img
+                src={img}
+                alt={`${brandName} 流媒体与服务解锁实测图 ${idx + 1}`}
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .unlock-panel {
+    background-color: var(--background);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    margin-block: var(--space-6);
+  }
+
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+    background-color: var(--accent);
+    border-bottom: 1px solid var(--border);
+    font-size: var(--font-size-sm);
+  }
+
+  .panel-title {
+    font-weight: var(--font-weight-bold);
+    color: var(--foreground);
+  }
+
+  .node-tag {
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+  }
+
+  .matrix-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .matrix-card {
+    background-color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+  }
+
+  .category-header {
+    font-weight: var(--font-weight-semi-bold);
+    color: var(--primary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .service-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .service-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-xs);
+  }
+
+  .service-name {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .status-pill {
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+  }
+
+  .status-ok {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+
+  .status-warn {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .screenshots-section {
+    padding: var(--space-4);
+    border-top: 1px solid var(--border);
+    background-color: var(--accent);
+  }
+
+  .section-title {
+    font-size: var(--font-size-xs);
+    color: var(--muted-foreground);
+    margin-bottom: var(--space-3);
+  }
+
+  .screenshots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-3);
+  }
+
+  .screenshot-item {
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background-color: #000;
+  }
+
+  .screenshot-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+</style>

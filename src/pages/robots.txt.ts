@@ -14,9 +14,12 @@ export const GET: APIRoute = async () => {
     });
   }
 
-  return new Response(`User-agent: *\nAllow: /\n\nSitemap: ${SITEMAP_URL}\n`, {
-    headers: {
-      "Content-Type": "text/plain; charset=utf-8",
+  return new Response(
+    `User-agent: *\nAllow: /\n\nUser-agent: Googlebot\nAllow: /\n\nUser-agent: bingbot\nAllow: /\n\nUser-agent: Baiduspider\nAllow: /\n\nUser-agent: yisouspider\nAllow: /\n\nSitemap: ${SITEMAP_URL}\n`,
+    {
+      headers: {
+        "Content-Type": "text/plain; charset=utf-8",
+      },
     },
-  });
+  );
 };

@@ -45,8 +45,12 @@ export default defineConfig({
     }),
     mdx(),
     sitemap({
-      // Exclude /page/1 to avoid duplicate URLs with the main list page
-      filter: (page) => !/\/page\/1\/?$/.test(page),
+      // Exclude /page/1, /tags/, /categories/ and /about/test/ from sitemap
+      filter: (page) =>
+        !/\/page\/1\/?$/.test(page) &&
+        !/\/tags\/?/.test(page) &&
+        !/\/categories\/?/.test(page) &&
+        !/\/test\/?$/.test(page),
     }),
     pagefind(),
     tsIntl(),

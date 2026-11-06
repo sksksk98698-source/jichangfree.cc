@@ -25,6 +25,7 @@ type Props = {
   publishedTime?: string;
   modifiedTime?: string;
   username?: string;
+  extraJsonLd?: Record<string, any>[] | Record<string, any>;
 };
 
 const currentLocale = useLocale() as Lang;
@@ -34,7 +35,7 @@ const {
   title: headTitle,
   description: headDescription,
   image,
-  canonicalURL = Astro.url.href.replace(`/${lang}`, `/${DEFAULT_LANG}`),
+  canonicalURL,
   alternates,
   noindex = false,
   languageSwitchLinks,
@@ -43,13 +44,14 @@ const {
   publishedTime,
   modifiedTime,
   username,
+  extraJsonLd,
 } = Astro.props;
 
 const rawImage = image ?? SiteConfig.ogImage;
 const imageSrc =
   typeof rawImage === "object" && rawImage !== null && "src" in rawImage ? rawImage.src : rawImage;
 
-const ogImageUrl = imageSrc ? new URL(imageSrc, Astro.site ?? Astro.url).href : undefined;
+const ogImageUrl = imageSrc ? new URL(imageSrc, SiteConfig.siteUrl).href : undefined;
 
 const t = useTranslations("common");
 
@@ -59,6 +61,9 @@ const siteDescription = t("site_description");
 const title = headTitle ? `${headTitle} | ${siteTitle}` : siteTitle;
 const description = headDescription ?? siteDescription;
 
+// Self-referential canonical URL (Google SEO best practice)
+const currentCanonical = canonicalURL ?? new URL(Astro.url.pathname, SiteConfig.siteUrl).href;
+
 const alternateList: { language: Lang; href: string }[] = [];
 let xDefaultURL: string | null = null;
 
@@ -67,12 +72,20 @@ if (!noindex) {
   if (typeof alternates === "undefined") {
     // Default: assume matching URLs exist across all languages
     AVAILABLE_LANG.forEach((language) => {
+      const localizedPath = Astro.url.pathname.replace(
+        new RegExp(`^${SiteConfig.basePath}/(${AVAILABLE_LANG.join("|")})`),
+        `${SiteConfig.basePath}/${language}`,
+      );
       alternateList.push({
         language,
-        href: Astro.url.href.replace(`/${lang}`, `/${language}`),
+        href: new URL(localizedPath, SiteConfig.siteUrl).href,
       });
     });
-    xDefaultURL = canonicalURL;
+    const defaultPath = Astro.url.pathname.replace(
+      new RegExp(`^${SiteConfig.basePath}/(${AVAILABLE_LANG.join("|")})`),
+      `${SiteConfig.basePath}/${DEFAULT_LANG}`,
+    );
+    xDefaultURL = new URL(defaultPath, SiteConfig.siteUrl).href;
   } else if (alternates) {
     // Custom alternates map provided by page (e.g. blog posts with specific slugs per lang)
     alternates.forEach((href, language) => {
@@ -82,8 +95,8 @@ if (!noindex) {
         alternateList.push({ language, href });
       }
     });
-    if (!xDefaultURL && canonicalURL) {
-      xDefaultURL = canonicalURL;
+    if (!xDefaultURL && currentCanonical) {
+      xDefaultURL = currentCanonical;
     }
   }
 }
@@ -97,6 +110,80 @@ const switchLinks: Map<Lang, string> =
       Astro.url.pathname.replace(`/${lang}`, `/${language}`),
     ]),
   );
+
+// Locale mapping for OpenGraph
+const ogLocales: Record<Lang, string> = {
+  "zh-Hans": "zh_CN",
+  "en-US": "en_US",
+  "ja-JP": "ja_JP",
+};
+const currentOgLocale = ogLocales[lang] || "zh_CN";
+const alternateOgLocales = AVAILABLE_LANG.filter((l) => l !== lang).map((l) => ogLocales[l]);
+
+// Schema.org JSON-LD Structured Data
+const jsonLdItems: Record<string, any>[] = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: siteTitle,
+    url: SiteConfig.siteUrl,
+    description: siteDescription,
+    inLanguage: lang,
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: t("header_title"),
+    url: SiteConfig.siteUrl,
+    logo: new URL(SiteConfig.basePath + "/favicon.svg", SiteConfig.siteUrl).href,
+  },
+];
+
+if (extraJsonLd) {
+  if (Array.isArray(extraJsonLd)) {
+    jsonLdItems.push(...extraJsonLd);
+  } else {
+    jsonLdItems.push(extraJsonLd);
+  }
+}
+
+if (type === "article") {
+  const authorName =
+    typeof authors === "string"
+      ? authors
+      : Array.isArray(authors) && authors.length > 0
+        ? authors[0]
+        : t("header_title");
+
+  jsonLdItems.push({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: headTitle || title,
+    description: description,
+    url: currentCanonical,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": currentCanonical,
+    },
+    inLanguage: lang,
+    datePublished: publishedTime,
+    dateModified: modifiedTime || publishedTime,
+    image: ogImageUrl ? [ogImageUrl] : undefined,
+    author: {
+      "@type": "Person",
+      name: authorName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: t("header_title"),
+      url: SiteConfig.siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: new URL(SiteConfig.basePath + "/favicon.svg", SiteConfig.siteUrl).href,
+      },
+    },
+  });
+}
 ---
 
 <!doctype html>
@@ -119,31 +206,43 @@ const switchLinks: Map<Lang, string> =
       )
     }
 
-    {/* Microsoft Clarity */}
     {
-      import.meta.env.PROD && SiteConfig.clarity?.enable && SiteConfig.clarity?.projectId && (
-        <script
-          type="text/javascript"
-          is:inline
-          set:html={`
-        (function (c, l, a, r, i, t, y) {
-          c[a] =
-            c[a] ||
-            function () {
-              (c[a].q = c[a].q || []).push(arguments);
-            };
-          t = l.createElement(r);
-          t.async = 1;
-          t.src = "https://www.clarity.ms/tag/" + i;
-          y = l.getElementsByTagName(r)[0];
-          y.parentNode.insertBefore(t, y);
-        })(window, document, "clarity", "script", "${SiteConfig.clarity.projectId}");
-      `}
+      (SiteConfig.bingSiteVerification || import.meta.env.BING_SITE_VERIFICATION) && (
+        <meta
+          name="msvalidate.01"
+          content={SiteConfig.bingSiteVerification || import.meta.env.BING_SITE_VERIFICATION}
         />
       )
     }
 
-    {noindex && <meta name="robots" content="noindex,follow" />}
+    {
+      (SiteConfig.baiduSiteVerification || import.meta.env.BAIDU_SITE_VERIFICATION) && (
+        <meta
+          name="baidu-site-verification"
+          content={SiteConfig.baiduSiteVerification || import.meta.env.BAIDU_SITE_VERIFICATION}
+        />
+      )
+    }
+
+    {
+      (SiteConfig.shenmaSiteVerification || import.meta.env.SHENMA_SITE_VERIFICATION) && (
+        <meta
+          name="shenma-site-verification"
+          content={SiteConfig.shenmaSiteVerification || import.meta.env.SHENMA_SITE_VERIFICATION}
+        />
+      )
+    }
+
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        />
+      )
+    }
 
     {/* Primary Meta Tags */}
     <title>{title}</title>
@@ -152,12 +251,14 @@ const switchLinks: Map<Lang, string> =
 
     {/* Open Graph / Facebook */}
     <meta property="og:type" content={type} />
-    <meta property="og:url" content={Astro.url} />
+    <meta property="og:url" content={currentCanonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:language" content={lang} />
-    <meta property="og:site_name" content={t("site_title")} />
+    <meta property="og:locale" content={currentOgLocale} />
+    {alternateOgLocales.map((loc) => <meta property="og:locale:alternate" content={loc} />)}
+    <meta property="og:site_name" content={t("header_title")} />
     {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta property="og:image:alt" content={title} />}
     {
       publishedTime && type === "article" && (
         <meta property="article:published_time" content={publishedTime} />
@@ -182,7 +283,7 @@ const switchLinks: Map<Lang, string> =
 
     {/* Twitter */}
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:url" content={currentCanonical} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     {ogImageUrl && <meta property="twitter:image" content={ogImageUrl} />}
@@ -195,9 +296,9 @@ const switchLinks: Map<Lang, string> =
     />
 
     {/* Canonical URL */}
-    {!noindex && canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    {!noindex && currentCanonical && <link rel="canonical" href={currentCanonical} />}
 
-    {/* Alternate URL */}
+    {/* Multilingual Hreflang Alternates */}
     {
       !noindex &&
         alternateList.map(({ language, href }) => (
@@ -205,6 +306,13 @@ const switchLinks: Map<Lang, string> =
         ))
     }
     {!noindex && xDefaultURL && <link rel="alternate" href={xDefaultURL} hreflang="x-default" />}
+
+    {/* Schema.org Structured Data (JSON-LD) */}
+    {
+      jsonLdItems.map((item) => (
+        <script type="application/ld+json" set:html={JSON.stringify(item)} />
+      ))
+    }
   </head>
   <body>
     <ScrollTop />
